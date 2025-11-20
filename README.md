@@ -69,7 +69,7 @@ The following Regular Expression is used for validation:
 
 Each character in the plate moves through DFA states:
 
-+------------+------------------+
+
 | State      | Expected Input   |
 |------------|------------------|
 | q0 → q1    | Uppercase Letter |
@@ -82,7 +82,7 @@ Each character in the plate moves through DFA states:
 | q7 → q8    | Digit            |
 | q8 → q9    | Digit            |
 | q9 → Final | Digit            |
-+------------+------------------+
+
 
 
 If any input does not match the expected value, the DFA enters a **dead state** and marks the plate as **INVALID**.
