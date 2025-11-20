@@ -65,20 +65,20 @@ The following Regular Expression is used for validation:
 
 Each character in the plate moves through DFA states:
 
-+------------+---------------------+
-|   State    |   Expected Input    |
-+------------+---------------------+
-| q0 → q1     | Uppercase Letter   |
-| q1 → q2     | Uppercase Letter   |
-| q2 → q3     | Digit              |
-| q3 → q4     | Digit              |
-| q4 → q5     | Uppercase Letter   |
-| q5 → q6     | Uppercase Letter   |
-| q6 → q7     | Digit              |
-| q7 → q8     | Digit              |
-| q8 → q9     | Digit              |
-| q9 → Final  | Digit              |
-+-------------+--------------------+
++------------+------------------+
+| State      | Expected Input   |
+|------------|------------------|
+| q0 → q1    | Uppercase Letter |
+| q1 → q2    | Uppercase Letter |
+| q2 → q3    | Digit            |
+| q3 → q4    | Digit            |
+| q4 → q5    | Uppercase Letter |
+| q5 → q6    | Uppercase Letter |
+| q6 → q7    | Digit            |
+| q7 → q8    | Digit            |
+| q8 → q9    | Digit            |
+| q9 → Final | Digit            |
++------------+------------------+
 
 
 If any input does not match the expected value, the DFA enters a **dead state** and marks the plate as **INVALID**.
@@ -130,9 +130,9 @@ This project is useful for:
 |---------------------|
 | ![Initial DFA](imgg/toc3.png) |
 
-| Invalid DFA | Valid DFA |
+| Valid DFA | Invalid DFA |
 |------------|-----------|
-| ![Invalid DFA](imgg/toc1.png) | ![Valid DFA](imgg/toc2.png) |
+| ![valid DFA](imgg/toc1.png) | ![Invalid DFA](imgg/toc2.png) |
 
 
 
