@@ -9,6 +9,7 @@ The project is created using **HTML, CSS, and JavaScript** and includes visual D
 ### ▶️ Live Project Link
 
 [Click here to open the project](https://mahekar001aditya.github.io/Vehical_Number_Plate_Validation__TOC/)
+
 ---
 ## 📌 Project Overview
 
