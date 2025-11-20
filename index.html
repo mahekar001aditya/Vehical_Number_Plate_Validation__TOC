@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DFA Plate Validator q0..q9 — stop on invalid (red node)</title>
+<style>
+  body{
+    margin:0;
+    font-family:Inter, system-ui, Arial;
+    background: linear-gradient(135deg,#76b8ff,#d7eaff);
+    display:flex;
+    justify-content:center;
+    padding:30px;
+  }
+  .card{
+    width:1100px;
+    background:#fff;
+    border-radius:16px;
+    padding:22px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.15);
+  }
+  h1{ text-align:center; color:#004a99; margin:4px 0 14px; }
+  .controls{ display:flex; justify-content:center; gap:10px; margin-bottom:14px; }
+  input{
+    padding:12px 14px; width:360px; font-size:18px; border-radius:10px;
+    border:2px solid #0051a8; text-transform:uppercase;
+  }
+  button{
+    padding:11px 18px; border-radius:10px; border:none; background:#0051a8; color:#fff;
+    cursor:pointer; font-size:16px;
+  }
+  button[disabled]{ opacity:0.6; cursor:not-allowed; }
+
+  .output{ text-align:center; font-weight:700; margin-top:10px; font-size:20px; }
+  .valid{ color:green; } .invalid{ color:red; }
+
+  svg{ width:100%; background:#f2f7ff; border-radius:12px; display:block; margin-top:12px; }
+
+  .state{
+    fill:#e9f0ff; stroke:#0051a8; stroke-width:2;
+  }
+  .state.active{
+    fill: #fff38f !important;
+    stroke: #ff5a5a !important;
+    stroke-width:3 !important;
+  }
+  .state.final{
+    stroke-width:4;
+  }
+  .state.invalid-node{
+    fill:#ff7171 !important;
+    stroke:#a30000 !important;
+    stroke-width:3 !important;
+  }
+
+  .transition{ stroke:#333; stroke-width:2; }
+  .transition-active{ stroke:#ff5a5a !important; stroke-width:3 !important; }
+
+  .charNode{ font-size:18px; font-weight:700; fill:#000; pointer-events:none; }
+  .stateLabel{ font-size:13px; fill:#222; }
+
+  /* small helper for accessibility */
+  .legend{ font-size:13px; margin-top:8px; text-align:center; color:#333; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>DFA Number Plate Validator — q0 → q9</h1>
+
+    <div class="controls">
+      <input id="plate" placeholder="Enter plate: KA01AB1234" maxlength="10" />
+      <button id="runBtn" onclick="runDFA()">Validate</button>
+    </div>
+
+    <div id="result" class="output"></div>
+
+    <!-- SVG: 10 states in a row: q0..q9 -->
+    <svg id="dfa" height="260" viewBox="0 0 1100 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DFA diagram">
+      <!-- states coordinates (evenly spaced) -->
+      <!-- We'll create q0..q9 at x positions 70 + i*100 -->
+      <!-- Draw transitions (straight lines) between centers -->
+      <!-- Transitions -->
+      <!-- lines t01 .. t89 -->
+      <g id="transitions">
+        <!-- 9 transitions -->
+        <line id="t01" class="transition" x1="100" y1="100" x2="200" y2="100"></line>
+        <line id="t12" class="transition" x1="200" y1="100" x2="300" y2="100"></line>
+        <line id="t23" class="transition" x1="300" y1="100" x2="400" y2="100"></line>
+        <line id="t34" class="transition" x1="400" y1="100" x2="500" y2="100"></line>
+        <line id="t45" class="transition" x1="500" y1="100" x2="600" y2="100"></line>
+        <line id="t56" class="transition" x1="600" y1="100" x2="700" y2="100"></line>
+        <line id="t67" class="transition" x1="700" y1="100" x2="800" y2="100"></line>
+        <line id="t78" class="transition" x1="800" y1="100" x2="900" y2="100"></line>
+        <line id="t89" class="transition" x1="900" y1="100" x2="1000" y2="100"></line>
+
+        <!-- labels above lines showing accepted class for positions -->
+        <text x="150" y="80" class="stateLabel">A-Z</text> <!-- 0-->
+        <text x="250" y="80" class="stateLabel">A-Z</text> <!-- 1-->
+        <text x="350" y="80" class="stateLabel">0-9</text> <!-- 2-->
+        <text x="450" y="80" class="stateLabel">0-9</text> <!-- 3-->
+        <text x="550" y="80" class="stateLabel">A-Z</text> <!-- 4-->
+        <text x="650" y="80" class="stateLabel">A-Z</text> <!-- 5-->
+        <text x="750" y="80" class="stateLabel">0-9</text> <!-- 6-->
+        <text x="850" y="80" class="stateLabel">0-9</text> <!-- 7-->
+        <text x="950" y="80" class="stateLabel">0-9</text> <!-- 8-->
+      </g>
+
+      <!-- states q0..q9 -->
+      <!-- circles -->
+      <g id="states">
+        <!-- q0 at x=100 -->
+        <circle id="q0" class="state" cx="100" cy="100" r="30"></circle>
+        <text id="c0" class="charNode" x="100" y="106" text-anchor="middle"></text>
+        <text x="90" y="138" class="stateLabel">q0</text>
+
+        <circle id="q1" class="state" cx="200" cy="100" r="30"></circle>
+        <text id="c1" class="charNode" x="200" y="106" text-anchor="middle"></text>
+        <text x="190" y="138" class="stateLabel">q1</text>
+
+        <circle id="q2" class="state" cx="300" cy="100" r="30"></circle>
+        <text id="c2" class="charNode" x="300" y="106" text-anchor="middle"></text>
+        <text x="290" y="138" class="stateLabel">q2</text>
+
+        <circle id="q3" class="state" cx="400" cy="100" r="30"></circle>
+        <text id="c3" class="charNode" x="400" y="106" text-anchor="middle"></text>
+        <text x="390" y="138" class="stateLabel">q3</text>
+
+        <circle id="q4" class="state" cx="500" cy="100" r="30"></circle>
+        <text id="c4" class="charNode" x="500" y="106" text-anchor="middle"></text>
+        <text x="490" y="138" class="stateLabel">q4</text>
+
+        <circle id="q5" class="state" cx="600" cy="100" r="30"></circle>
+        <text id="c5" class="charNode" x="600" y="106" text-anchor="middle"></text>
+        <text x="590" y="138" class="stateLabel">q5</text>
+
+        <circle id="q6" class="state" cx="700" cy="100" r="30"></circle>
+        <text id="c6" class="charNode" x="700" y="106" text-anchor="middle"></text>
+        <text x="690" y="138" class="stateLabel">q6</text>
+
+        <circle id="q7" class="state" cx="800" cy="100" r="30"></circle>
+        <text id="c7" class="charNode" x="800" y="106" text-anchor="middle"></text>
+        <text x="790" y="138" class="stateLabel">q7</text>
+
+        <circle id="q8" class="state" cx="900" cy="100" r="30"></circle>
+        <text id="c8" class="charNode" x="900" y="106" text-anchor="middle"></text>
+        <text x="890" y="138" class="stateLabel">q8</text>
+
+        <!-- q9 final -->
+        <circle id="q9" class="state final" cx="1000" cy="100" r="30"></circle>
+        <circle cx="1000" cy="100" r="26" fill="none" stroke="#0051a8" stroke-width="3"></circle>
+        <text id="c9" class="charNode" x="1000" y="106" text-anchor="middle"></text>
+        <text x="990" y="138" class="stateLabel">q9 (final)</text>
+      </g>
+
+      <!-- small note under svg -->
+      <text x="40" y="220" class="stateLabel">Format: A A 0 0 A A 0 0 0 0  (positions 0..9)</text>
+    </svg>
+
+    <div class="legend">
+      On invalid: the offending node turns <strong>red</strong>, operation stops and result shows "INVALID".
+    </div>
+  </div>
+
+<script>
+  // small sleep helper
+  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+  // utilities
+  const isLetter = ch => /^[A-Z]$/.test(ch);
+  const isDigit  = ch => /^[0-9]$/.test(ch);
+
+  // reset visuals
+  function resetVisuals(){
+    // remove active/invalid from states
+    for(let i=0;i<=9;i++){
+      const s = document.getElementById("q"+i);
+      s.classList.remove("active","invalid-node");
+      const txt = document.getElementById("c"+i);
+      if(txt) txt.textContent = "";
+    }
+    // reset transitions
+    const trans = ["t01","t12","t23","t34","t45","t56","t67","t78","t89"];
+    trans.forEach(tid=>{
+      const el = document.getElementById(tid);
+      if(el) el.classList.remove("transition-active");
+    });
+    // clear result
+    const res = document.getElementById("result");
+    res.textContent = "";
+    res.className = "output";
+  }
+
+  // disable/enable button
+  function setRunning(r){
+    const btn = document.getElementById("runBtn");
+    const inp = document.getElementById("plate");
+    btn.disabled = r;
+    inp.disabled = r;
+  }
+
+  // run DFA across 10 states (positions 0..9)
+  async function runDFA(){
+    resetVisuals();
+    setRunning(true);
+
+    const inpEl = document.getElementById("plate");
+    const raw = (inpEl.value || "").toUpperCase().trim();
+    const resEl = document.getElementById("result");
+
+    // if shorter/longer than 10 -> mark first offending position (if any) or simply fail at position length
+    if(raw.length !== 10){
+      // show characters for any positions available till length then mark missing as invalid
+      for(let i=0;i<raw.length && i<10;i++){
+        document.getElementById("c"+i).textContent = raw[i];
+        document.getElementById("q"+i).classList.add("active");
+        if(i < 9) document.getElementById("t0"+(i+1)).classList.add("transition-active");
+        await sleep(200);
+      }
+      // choose offending position: first missing index
+      const offending = raw.length; // e.g., if length 8, offending is 8 (q8)
+      // clamp to 9
+      const idx = Math.min(offending,9);
+      const q = document.getElementById("q"+idx);
+      q.classList.add("invalid-node");
+      document.getElementById("c"+idx).textContent = raw[idx] ?? "";
+      resEl.textContent = "❌ INVALID NUMBER PLATE";
+      resEl.className = "output invalid";
+      setRunning(false);
+      return;
+    }
+
+    // iterate each position 0..9
+    for(let i=0;i<10;i++){
+      const ch = raw[i];
+      // display char in node
+      const charNode = document.getElementById("c"+i);
+      charNode.textContent = ch;
+
+      // mark node active
+      const state = document.getElementById("q"+i);
+      state.classList.add("active");
+
+      // basic validation per pos:
+      let ok = true;
+      if(i === 0 || i === 1 || i === 4 || i === 5){
+        if(!isLetter(ch)) ok = false;
+      } else { // positions 2,3,6,7,8,9 are digits
+        if(!isDigit(ch)) ok = false;
+      }
+
+      // if invalid -> color node red and stop immediately
+      if(!ok){
+        // optionally highlight the transition that led here (previous)
+        if(i>0){
+          const tid = "t" + String(i-1) + String(i);
+          const t = document.getElementById(tid);
+          if(t) t.classList.add("transition-active");
+        }
+        state.classList.remove("active");
+        state.classList.add("invalid-node");
+        // show result and stop
+        resEl.textContent = "❌ INVALID NUMBER PLATE";
+        resEl.className = "output invalid";
+        setRunning(false);
+        return; // STOP operation immediately
+      }
+
+      // if valid, highlight outgoing transition (except for last state)
+      if(i < 9){
+        const tid = "t" + String(i) + String(i+1);
+        const t = document.getElementById(tid);
+        if(t) t.classList.add("transition-active");
+      }
+
+      // small delay to show progression
+      await sleep(300);
+    }
+
+    // if all positions valid -> success (final state q9 stays active but not invalid)
+    resEl.textContent = "✔ VALID NUMBER PLATE";
+    resEl.className = "output valid";
+    setRunning(false);
+  }
+</script>
+</body>
+</html>
