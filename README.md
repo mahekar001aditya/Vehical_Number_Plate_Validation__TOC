@@ -1,5 +1,5 @@
 # 🚗 DFA Number Plate Validator Using Regular Expression  
-[ ## TOC Project ]
+## TOC Project 
 
 This project is a **web-based Number Plate Validator** that uses **Regular Expressions (Regex)** and **DFA (Deterministic Finite Automaton)** principles to validate Indian vehicle number plates.
 
